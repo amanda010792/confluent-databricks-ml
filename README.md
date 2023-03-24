@@ -3,6 +3,10 @@ Workshop Repository for Confluent &lt;> Databricks ML workshop
 
 ## Workshop Overview 
 
+Today, we will be simulating a pizza chain that is trying to keep customers updated with the latest pizza wait times. Imagine ordering a pizza online and recieving information about projected wait times based on historical data for that time of day for the specific shop you are ordering for, but not having up to date information about the store you are attempting to order from. Pretty bad customer experience right? Today, we're going to fix that by using a combination of two powerful real-time platforms: Confluent Cloud and Databricks Delta Live tables to populate the latest wait times in our applicaiton based on the real-time pizza orders and their subsequent completions and/or cancellations.    
+
+The workshop flow we will be setting up is as follows: (**input diagram of flow) 
+
 ## Pre-requisites 
 
 ### Confluent Cloud Pre-requisites 
@@ -103,13 +107,11 @@ Copy each line and paste it into the producer terminal, or copy-paste all of the
 {"party_size":10,"wait_time":6}
 ```
 
-##### Create mock pizza orders data
-
-####### Create an API Key to be used for your Connectors 
+##### Create an API Key to be used for your Connectors 
 - In the Confluent Cloud Dashboard in your cluster UI, select Cluster Overview -> API Keys
 - Click the "Add Key" Button and select Global Access and create your key. Download your key and save it as we will use this for the connector creation. 
 
-####### Create a connector to bring in pizza orders data
+##### Create a connector to bring in pizza orders data
 - In the Confluent Cloud Dashboard in your cluster UI, select Connectors
 - Click the "+ Add Connector" button
 - Select the "Datagen Source" connector 
@@ -120,6 +122,9 @@ Copy each line and paste it into the producer terminal, or copy-paste all of the
 - For sizing leave the default of 1 task selected & click "continue"
 - Name your connector "pizza_orders_avro_datagen" and launch your connector. 
 
-####### Create a connector to bring in pizza orders cancelled & completed data
+##### Create a connector to bring in pizza orders cancelled & completed data
 Repeat the above steps for both pizza_orders_cancelled_avro & pizza_orders_completed_avro with the appropriate topics & templates (all other configurations the same). When you are finished you should have 3 deployed Datagen Connectors and you should see data being populated into your topics. 
 
+## Databricks Setup
+
+**nick to input info about databricks setup 
