@@ -1,0 +1,9 @@
+{
+"type": "record",
+"namespace": "io.confluent.databrickslab",
+"name": "WaitTimes",
+"fields": [
+    {"name": "party_size", "type": "int", "doc": "The party size associated with this wait time."},
+    {"name": "wait_time", "type": "int", "doc": "The current wait time for given party size (in minutes)."}
+    ]
+}
