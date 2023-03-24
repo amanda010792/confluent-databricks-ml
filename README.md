@@ -1,2 +1,125 @@
 # confluent-databricks-ml
 Workshop Repository for Confluent &lt;> Databricks ML workshop 
+
+## Workshop Overview 
+
+## Pre-requisites 
+
+### Confluent Cloud Pre-requisites 
+
+- Sign up for Confluent Cloud at the [Confluent Cloud Sign Up Page](https://confluent.cloud/signup). You will recieve $400 in free credits upon sign up. 
+- Download the Confluent Cloud CLI from the [install page](https://docs.confluent.io/confluent-cli/current/install.html)
+
+### Databricks Pre-requisites 
+
+## Confluent Cloud Set-up
+
+### Spin up required Resources 
+
+##### Setup Environment
+
+Create an environment in Confluent Cloud for the workshop called "confluent-databricks-ml-workshop-env" following the steps outlined [here](https://docs.confluent.io/cloud/current/access-management/hierarchy/cloud-environments.html#add-an-environment). An environment contains Kafka clusters and deployed components such as Connect, ksqlDB, and Schema Registry. You can define multiple environments for a Organizations for Confluent Cloud, and there is no charge for creating or using additional environments. Different departments or teams can use separate environments to avoid interfering with each other.     
+
+##### Setup Kafka Cluster
+
+Create a cluster in Confluent Cloud for the workshop called "confluent-databricks-ml-workshop-cluster" following the steps outlined [here](https://docs.confluent.io/cloud/current/clusters/create-cluster.html#create-clusters). You can create clusters using the Confluent Cloud Console, Confluent CLI, and REST API. For a description of cluster types and resource quotas for clusters, see [Confluent Cloud Features and Limits by Cluster Type and Service Quotas for Confluent Cloud](https://docs.confluent.io/cloud/current/quotas/index.html#service-quotas-for-ccloud). The cluster should have the following attributes: 
+- Basic cluster in the cloud provider & region of your choice
+- Single AZ setup      
+
+##### Setup ksqlDB Cluster
+
+Once the cluster is deployed, create a ksqlDB cluster (with a size of 1 CSU) called "pizza-wait-times-app" following the steps outlined [here](https://docs.confluent.io/cloud/current/get-started/index.html#step-1-create-a-ksql-cloud-cluster-in-ccloud). ksqlDB is fully hosted on Confluent Cloud and provides a simple, scalable, resilient, and secure event streaming platform.   
+
+##### Create Schema Registry & a Schema-Registry API Key
+
+
+Create an API key for Schema Registry:     
+
+Returning to the Confluent Cloud Dashboard, select your environment
+On the right-hand side you will see a stream governance menu. Under "Credentials", select "Add Key"
+Click "Create key" and store your credentials
+
+##### Setup Kafka topics 
+
+We are going to set up the following topics to bring our use case to life: 
+- waittimes_avro 
+- pizza_orders_avro 
+- pizza_orders_cancelled_avro 
+- pizza_orders_completed_avro 
+
+First, we need to create the topics listed above following the documentation [here](https://docs.confluent.io/cloud/current/client-apps/topics/manage.html#create-a-topic). An Apache Kafka® topic is a category or feed that stores messages. Producers send messages and write data to topics, and consumers read messages from topics. We will create each topic above with 1 partition to guarantee ordering across the entire topic.     
+
+##### Produce initial wait times
+
+Imagine we have a stale machine learning model that has created some estimated wait times for our pizza orders. Initially, let's load that wait time into our Kafka Cluster. However, once we are done with the lab we will be able to recieve the most up to date wait times and communicate these to our customers so they have a real-time update when they attempt to make a pizza order.     
+
+In Kafka we store schemas for our topics in a Schema Registry. In Confluent Cloud you create Schema Registries at the environment level. You can create and edit schemas in a schema editor and associate them with Kafka topics. We will use the Schema Registry created above to store the schema information for our topics. The schema for our waittimes_avro topic can be found in schemas/waittimes-avro-schema.json. As you can see, the AVRO schema is stored in a json file. We will use this AVRO schema to serialize the messages we write to Confluent Cloud.      
+
+We will initialize the data in our waittimes topic by using the Confluent CLI to produce messages to our topic. We will login to the CLI, select the appropriate cluster and create an API key for the cluster.      
+
+Choose the cluster you've created for this workshop:     
+```
+confluent environment list 
+confluent environment use <env-id> 
+confluent kafka cluster list 
+confluent kafka cluster use <cluster-id> 
+```
+
+Create an API key for the CLI to use:   
+```
+confluent api-key create --resource <cluster-id>
+confluent api-key use <api-key> --resource <cluster-id>
+```
+
+Go to the schema directory: 
+```
+cd schemas
+```
+
+Start a producer to write to our tables topic: 
+```
+confluent kafka topic produce waittimes --value-format avro --schema waittimes-avro-schema.json
+```
+
+The producer will start with some information and then wait for you to enter input.
+```
+Successfully registered schema with ID 100001
+Starting Kafka Producer. ^C or ^D to exit
+```
+
+Below are records in JSON format with each line representing a single record (each for the stale waittime data). In this case we are producing records in Avro format, however, first they are passed to the producer in JSON and the producer converts them to Avro based on the waittimes-avro-schema.json schema prior to sending them to Kafka.
+
+Copy each line and paste it into the producer terminal, or copy-paste all of them into the terminal and hit enter.
+```
+{"store_id":1,"wait_time":15}
+{"store_id":2,"wait_time":20}
+{"store_id":3,"wait_time":7}
+{"store_id":4,"wait_time":23}
+{"party_size":5,"wait_time":25}
+{"party_size":6,"wait_time":20}
+{"party_size":7,"wait_time":13}
+{"party_size":8,"wait_time":10}
+{"party_size":9,"wait_time":2}
+{"party_size":10,"wait_time":6}
+```
+
+##### Create mock pizza orders data
+
+####### Create an API Key to be used for your Connectors 
+- In the Confluent Cloud Dashboard in your cluster UI, select Cluster Overview -> API Keys
+- Click the "Add Key" Button and select Global Access and create your key. Download your key and save it as we will use this for the connector creation. 
+
+####### Create a connector to bring in pizza orders data
+- In the Confluent Cloud Dashboard in your cluster UI, select Connectors
+- Click the "+ Add Connector" button
+- Select the "Datagen Source" connector 
+- Choose the "pizza_orders_avro" topic & click continue
+- For your Kafka Credentials, select "Use an Existing Key" and put in the key and secret created above. 
+- For your output record value format select "AVRO"
+- For your template, click "Show more options" and select "Pizza orders". 
+- For sizing leave the default of 1 task selected & click "continue"
+- Name your connector "pizza_orders_avro_datagen" and launch your connector. 
+
+####### Create a connector to bring in pizza orders cancelled & completed data
+Repeat the above steps for both pizza_orders_cancelled_avro & pizza_orders_completed_avro with the appropriate topics & templates (all other configurations the same). When you are finished you should have 3 deployed Datagen Connectors and you should see data being populated into your topics. 
+
