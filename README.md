@@ -22,7 +22,9 @@ The workshop flow we will be setting up is as follows: (**input diagram of flow)
 
 ##### Setup Environment
 
-Create an environment in Confluent Cloud for the workshop called "confluent-databricks-ml-workshop-env" following the steps outlined [here](https://docs.confluent.io/cloud/current/access-management/hierarchy/cloud-environments.html#add-an-environment). An environment contains Kafka clusters and deployed components such as Connect, ksqlDB, and Schema Registry. You can define multiple environments for a Organizations for Confluent Cloud, and there is no charge for creating or using additional environments. Different departments or teams can use separate environments to avoid interfering with each other.     
+Create an environment in Confluent Cloud for the workshop called "confluent-databricks-ml-workshop-env" following the steps outlined [here](https://docs.confluent.io/cloud/current/access-management/hierarchy/cloud-environments.html#add-an-environment). An environment contains Kafka clusters and deployed components such as Connect, ksqlDB, and Schema Registry. You can define multiple environments for a Organizations for Confluent Cloud, and there is no charge for creating or using additional environments. Different departments or teams can use separate environments to avoid interfering with each other.    
+
+When the environment is created, select "Essentials -> Begin Configuration" and choose the cloud provider and region of your choice.    
 
 ##### Setup Kafka Cluster
 
@@ -32,9 +34,7 @@ Create a cluster in Confluent Cloud for the workshop called "confluent-databrick
 
 ##### Setup ksqlDB Cluster
 
-Once the cluster is deployed, create a ksqlDB cluster (with a size of 1 CSU) called "pizza-wait-times-app" following the steps outlined [here](https://docs.confluent.io/cloud/current/get-started/index.html#step-1-create-a-ksql-cloud-cluster-in-ccloud). ksqlDB is fully hosted on Confluent Cloud and provides a simple, scalable, resilient, and secure event streaming platform.   
-
-##### Create Schema Registry & a Schema-Registry API Key
+Once the cluster is deployed, create a ksqlDB cluster (with global access & a size of 1 CSU) called "pizza-wait-times-app" following the steps outlined [here](https://docs.confluent.io/cloud/current/get-started/index.html#step-1-create-a-ksql-cloud-cluster-in-ccloud). ksqlDB is fully hosted on Confluent Cloud and provides a simple, scalable, resilient, and secure event streaming platform.   
 
 
 Create an API key for Schema Registry:     
@@ -63,6 +63,7 @@ We will initialize the data in our waittimes topic by using the Confluent CLI to
 
 Choose the cluster you've created for this workshop:     
 ```
+confluent login --save
 confluent environment list 
 confluent environment use <env-id> 
 confluent kafka cluster list 
@@ -82,7 +83,7 @@ cd schemas
 
 Start a producer to write to our tables topic: 
 ```
-confluent kafka topic produce waittimes --value-format avro --schema waittimes-avro-schema.json
+confluent kafka topic produce waittimes-avro --value-format avro --schema waittimes-avro-schema.json
 ```
 
 The producer will start with some information and then wait for you to enter input.
@@ -99,12 +100,12 @@ Copy each line and paste it into the producer terminal, or copy-paste all of the
 {"store_id":2,"wait_time":20}
 {"store_id":3,"wait_time":7}
 {"store_id":4,"wait_time":23}
-{"party_size":5,"wait_time":25}
-{"party_size":6,"wait_time":20}
-{"party_size":7,"wait_time":13}
-{"party_size":8,"wait_time":10}
-{"party_size":9,"wait_time":2}
-{"party_size":10,"wait_time":6}
+{"store_id":5,"wait_time":25}
+{"store_id":6,"wait_time":20}
+{"store_id":7,"wait_time":13}
+{"store_id":8,"wait_time":10}
+{"store_id":9,"wait_time":2}
+{"store_id":10,"wait_time":6}
 ```
 
 ##### Create an API Key to be used for your Connectors 
