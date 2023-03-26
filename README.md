@@ -53,6 +53,8 @@ We are going to set up the following topics to bring our use case to life:
 
 First, we need to create the topics listed above following the documentation [here](https://docs.confluent.io/cloud/current/client-apps/topics/manage.html#create-a-topic). An Apache Kafka® topic is a category or feed that stores messages. Producers send messages and write data to topics, and consumers read messages from topics. We will create each topic above with 1 partition to guarantee ordering across the entire topic.     
 
+### Populate Event Data
+
 ##### Produce initial wait times
 
 Imagine we have a stale machine learning model that has created some estimated wait times for our pizza orders. Initially, let's load that wait time into our Kafka Cluster. However, once we are done with the lab we will be able to recieve the most up to date wait times and communicate these to our customers so they have a real-time update when they attempt to make a pizza order.     
@@ -125,6 +127,34 @@ Copy each line and paste it into the producer terminal, or copy-paste all of the
 
 ##### Create a connector to bring in pizza orders cancelled & completed data
 Repeat the above steps for both pizza_orders_cancelled_avro & pizza_orders_completed_avro with the appropriate topics & templates (all other configurations the same). When you are finished you should have 3 deployed Datagen Connectors and you should see data being populated into your topics. 
+
+### Transform your data in real time using ksqlDB
+
+##### Create ksqlDB Streams using your topics 
+
+A stream is a partitioned, immutable, append-only collection that represents a series of historical facts. For example, the rows of a stream could model a sequence of financial transactions, like "Alice sent $100 to Bob", followed by "Charlie sent $50 to Bob". Once a row is inserted into a stream, it can never change. New rows can be appended at the end of the stream, but existing rows can never be updated or deleted.     
+
+Each row is stored in a particular partition. Every row, implicitly or explicitly, has a key that represents its identity. All rows with the same key reside in the same partition.     
+
+- In the Confluent Cloud Dashboard in your Cluster UI, select ksqlDB and select your application 
+- Select the "Streams" Tab in the application 
+- Click the "Import topics as streams" and import all the topics you created in the above steps
+
+
+##### Inspect the data in your topics using Queries 
+There are three kinds of queries in ksqlDB: persistent, push, and pull. Each gives you different ways to work with rows of events.       
+
+A push query is a form of query issued by a client that subscribes to a result as it changes in real-time. A good example of a push query is subscribing to a particular user's geographic location. The query requests the map coordinates, and because it's a push query, any change to the location is "pushed" over a long-lived connection to the client as soon as it occurs. This is useful for building programmatically controlled microservices, real-time apps, or any sort of asynchronous control flow.      
+
+Push queries are expressed using a SQL-like language. They can be used to query either streams or tables for a particular key. Also, push queries aren't limited to key look-ups. They support a full set of SQL, including filters, selects, group bys, partition bys, and joins. Push queries will contain the command "EMIT CHANGES" to notify the ksqlDB query to remain continuously running.      
+
+Navigate to the "Editor" tab in your ksqlDB application. Let's write a query to filer out the pizza orders for a single store:       
+```
+SELECT *
+FROM  PIZZA_ORDERS_AVRO 
+WHERE STORE_ID=2
+EMIT CHANGES;
+```
 
 ## Databricks Setup
 
