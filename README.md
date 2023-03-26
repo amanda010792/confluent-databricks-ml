@@ -85,7 +85,7 @@ cd schemas
 
 Start a producer to write to our tables topic: 
 ```
-confluent kafka topic produce waittimes-avro --value-format avro --schema waittimes-avro-schema.json
+confluent kafka topic produce waittimes_avro --value-format avro --schema waittimes-avro-schema.json
 ```
 
 The producer will start with some information and then wait for you to enter input.
