@@ -159,4 +159,4 @@ EMIT CHANGES;
 
 ## Databricks Setup
 
-**nick to input info about databricks setup 
+Refer to notebooks sent via email for instructions.    
