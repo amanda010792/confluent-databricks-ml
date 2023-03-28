@@ -5,7 +5,6 @@ Workshop Repository for Confluent &lt;> Databricks ML workshop
 
 Today, we will be simulating a pizza chain that is trying to keep customers updated with the latest pizza wait times. Imagine ordering a pizza online and receiving information about projected wait times based on historical data for that time of day for the specific shop you are ordering for, but not having up to date information about the store you are attempting to order from. Pretty bad customer experience right? Today, we're going to fix that by using a combination of two powerful real-time platforms: Confluent Cloud and Databricks Delta Live tables to populate the latest wait times in our application based on the real-time pizza orders and their subsequent completions and/or cancellations.    
 
-The workshop flow we will be setting up is as follows: (**input diagram of flow) 
 
 ## Pre-requisites 
 
