@@ -3,7 +3,7 @@ Workshop Repository for Confluent &lt;> Databricks ML workshop
 
 ## Workshop Overview 
 
-Today, we will be simulating a pizza chain that is trying to keep customers updated with the latest pizza wait times. Imagine ordering a pizza online and recieving information about projected wait times based on historical data for that time of day for the specific shop you are ordering for, but not having up to date information about the store you are attempting to order from. Pretty bad customer experience right? Today, we're going to fix that by using a combination of two powerful real-time platforms: Confluent Cloud and Databricks Delta Live tables to populate the latest wait times in our applicaiton based on the real-time pizza orders and their subsequent completions and/or cancellations.    
+Today, we will be simulating a pizza chain that is trying to keep customers updated with the latest pizza wait times. Imagine ordering a pizza online and receiving information about projected wait times based on historical data for that time of day for the specific shop you are ordering for, but not having up to date information about the store you are attempting to order from. Pretty bad customer experience right? Today, we're going to fix that by using a combination of two powerful real-time platforms: Confluent Cloud and Databricks Delta Live tables to populate the latest wait times in our application based on the real-time pizza orders and their subsequent completions and/or cancellations.    
 
 The workshop flow we will be setting up is as follows: (**input diagram of flow) 
 
@@ -11,8 +11,9 @@ The workshop flow we will be setting up is as follows: (**input diagram of flow)
 
 ### Confluent Cloud Pre-requisites 
 
-- Sign up for Confluent Cloud at the [Confluent Cloud Sign Up Page](https://confluent.cloud/signup). You will recieve $400 in free credits upon sign up. 
+- Sign up for Confluent Cloud at the [Confluent Cloud Sign Up Page](https://confluent.cloud/signup). You will receive $400 in free credits upon sign up. 
 - Download the Confluent Cloud CLI from the [install page](https://docs.confluent.io/confluent-cli/current/install.html)
+- Download this repo 
 
 ### Databricks Pre-requisites 
 
@@ -57,7 +58,7 @@ First, we need to create the topics listed above following the documentation [he
 
 ##### Produce initial wait times
 
-Imagine we have a stale machine learning model that has created some estimated wait times for our pizza orders. Initially, let's load that wait time into our Kafka Cluster. However, once we are done with the lab we will be able to recieve the most up to date wait times and communicate these to our customers so they have a real-time update when they attempt to make a pizza order.     
+Imagine we have a stale machine learning model that has created some estimated wait times for our pizza orders. Initially, let's load that wait time into our Kafka Cluster. However, once we are done with the lab we will be able to receive the most up to date wait times and communicate these to our customers so they have a real-time update when they attempt to make a pizza order.     
 
 In Kafka we store schemas for our topics in a Schema Registry. In Confluent Cloud you create Schema Registries at the environment level. You can create and edit schemas in a schema editor and associate them with Kafka topics. We will use the Schema Registry created above to store the schema information for our topics. The schema for our waittimes_avro topic can be found in schemas/waittimes-avro-schema.json. As you can see, the AVRO schema is stored in a json file. We will use this AVRO schema to serialize the messages we write to Confluent Cloud.      
 
